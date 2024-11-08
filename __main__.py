@@ -100,7 +100,7 @@ def InterpolateYaw():
             real_yaw_angle = yaw_angle
 
         with open("out.txt", 'w') as output:
-            output.write(real_yaw_angle)
+            output.write(f"{real_yaw_angle}")
 
 
 x = Thread(target=InterpolateYaw)
