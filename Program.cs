@@ -113,9 +113,45 @@ namespace ETS2SoftwareEyeDetector
             joystick.ResetVJD(id);
 
             // Feed the device in endless loop
+            float angle = 1f;
+            float angleAddition = 0f;
+
             while (true)
             {
-                res = joystick.SetAxis(X, id, HID_USAGES.HID_USAGE_X);
+                if (angle != 0 && X != 0)
+                {
+                    try
+                    {
+                        using StreamReader reader = new("output.txt");
+                        angle = float.Parse(ReadToEnd());
+                        if (angle < 0)
+                        {
+                            angleAddition = -angle + 1;
+                        }
+                        else
+                        {
+                            angleAddition = 0
+                        }
+
+                        if (angle > X)
+                        {
+                            X += 0.06 * (angle + angleAddition / X + angleAddition)
+                        }
+                        else
+                        {
+                            X -= 0.06 * (X + angleAddition / angle + angleAddition)
+                        }
+                        res = joystick.SetAxis(X, id, HID_USAGES.HID_USAGE_X);
+                    }
+                    catch
+                    {
+                        X = angle;
+                    }
+                    
+
+
+                }
+
             }
         } // Main
     } // class Program
