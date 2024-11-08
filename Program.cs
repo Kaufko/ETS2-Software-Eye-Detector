@@ -4,7 +4,7 @@ using System.Text;
 
 using vJoyInterfaceWrap;
 
-namespace FeederDemoCS
+namespace ETS2SoftwareEyeDetector
 {
     class Program
     {
@@ -103,7 +103,7 @@ namespace FeederDemoCS
             Console.WriteLine("\npress enter to stat feeding");
             Console.ReadKey(true);
 
-            int X;
+            int X = 0;
             long maxval = 0;
 
             joystick.GetVJDAxisMax(id, HID_USAGES.HID_USAGE_X, ref maxval);
