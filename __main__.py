@@ -86,11 +86,6 @@ def InterpolateYaw():
                     angle_addition = -yaw_angle + 1
                 else:
                     angle_addition = 0
-
-                if(real_yaw_angle < 0):
-                    angle_addition_real = -real_yaw_angle + 1
-                else:
-                    angle_addition_real = 0
                 if(yaw_angle > real_yaw_angle):
                     real_yaw_angle += 0.06 * (yaw_angle + angle_addition / real_yaw_angle + angle_addition)
                 else:
@@ -98,9 +93,14 @@ def InterpolateYaw():
             except:
                 real_yaw_angle = yaw_angle
         sleep(1/60)
+        
         print(f"{yaw_angle} | {real_yaw_angle}")
+
         if(isnan(real_yaw_angle)):
             real_yaw_angle = yaw_angle
+
+        with open("out.txt", 'w') as output:
+            output.write(real_yaw_angle)
 
 
 x = Thread(target=InterpolateYaw)
