@@ -8,8 +8,8 @@
     <ProjectGuid>{CCA62E05-B035-49F6-A3B4-ACD21CD562E4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FeederDemoCS</RootNamespace>
-    <AssemblyName>FeederDemoCS</AssemblyName>
+    <RootNamespace>ETS2 Software Eye Detector</RootNamespace>
+    <AssemblyName>ETS2 Software Eye Detector</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="vJoyInterfaceWrap, Version=0.2.0.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\x64\vJoyInterfaceWrap.dll</HintPath>
+      <HintPath>vJoyInterfaceWrap.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
