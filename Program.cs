@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.IO;
+using System.Text.Json;
 using vJoyInterfaceWrap;
+using vJoyInterface;
 
 namespace ETS2SoftwareEyeDetector
 {
     class Program
     {
+
+
         // Declaring one joystick (Device id 1) and a position structure. 
         static public vJoy joystick;
         static public vJoy.JoystickState iReport;
@@ -101,9 +105,8 @@ namespace ETS2SoftwareEyeDetector
                 Console.WriteLine("Acquired: vJoy device number {0}.\n", id);
 
             Console.WriteLine("\npress enter to stat feeding");
-            Console.ReadKey(true);
 
-            int X = 0;
+            int X = 1;
             long maxval = 0;
 
             joystick.GetVJDAxisMax(id, HID_USAGES.HID_USAGE_X, ref maxval);
@@ -114,7 +117,7 @@ namespace ETS2SoftwareEyeDetector
 
             // Feed the device in endless loop
             float angle = 1f;
-            float angleAddition = 0f;
+            float angleAddition;
 
             while (true)
             {
@@ -122,37 +125,47 @@ namespace ETS2SoftwareEyeDetector
                 {
                     try
                     {
-                        using StreamReader reader = new("output.txt");
-                        angle = float.Parse(ReadToEnd());
+                        if (!File.Exists("data.json.lock"))
+                        {
+                            string jsonData = File.ReadAllText("data.json");
+                            var data = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonData);
+                            var angleTemp = data["angle"];
+                            angle = float.Parse($"{angleTemp}");
+                            Console.WriteLine("Received angle: " + angle);
+                        }
+                        else { Console.WriteLine("File is locked"); }
+
+
                         if (angle < 0)
                         {
                             angleAddition = -angle + 1;
                         }
                         else
                         {
-                            angleAddition = 0
+                            angleAddition = 0;
                         }
 
                         if (angle > X)
                         {
-                            X += 0.06 * (angle + angleAddition / X + angleAddition)
+                            X += Convert.ToInt32(5 * (0.06 * (angle + angleAddition / X + angleAddition)));
                         }
                         else
                         {
-                            X -= 0.06 * (X + angleAddition / angle + angleAddition)
+                            X -= Convert.ToInt32(5 * 0.06 * (X + angleAddition / angle + angleAddition));
                         }
-                        res = joystick.SetAxis(X, id, HID_USAGES.HID_USAGE_X);
+                        res = joystick.SetAxis(Convert.ToInt32(Map(angle, -20, 20, 0, maxval)), id, HID_USAGES.HID_USAGE_X);
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        X = angle;
+                        X = Convert.ToInt32(Map(angle, -20, 20, 0, maxval));
+                        Console.WriteLine(exception);
                     }
-                    
-
-
                 }
-
             }
         } // Main
+        static float Map(float value, float minInput, float maxInput, float minOutput, float maxOutput)
+        {
+            return (value - minInput) / (maxInput - minInput) * (maxOutput - minOutput) + minOutput;
+        }
     } // class Program
 } // namespace FeederDemoCS

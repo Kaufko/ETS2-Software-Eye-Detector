@@ -3,9 +3,13 @@ import face_recognition
 from numpy import mean, degrees, arctan2, isnan
 from time import sleep
 from threading import Thread
-
+import json
+from filelock import FileLock
 yaw_angle = 0.1
-real_yaw_angle = 0.1
+
+
+lock = FileLock("data.json.lock")
+
 
 def get_yaw_angle(landmarks):
     # Points for eyes and nose bridge for yaw calculation
@@ -57,8 +61,6 @@ def main():
             # Display the yaw angle
             putText(frame, f"Yaw Angle: {yaw_angle:.2f} degrees", 
                         (50, 50), FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
-            putText(frame, f"Yaw Angle Interpolated: {real_yaw_angle:.2f} degrees", 
-                        (50, 100), FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
             # Draw landmarks for visualization
             for feature in face_landmarks.keys():
@@ -71,40 +73,24 @@ def main():
         # Break loop with 'q'
         if waitKey(1) & 0xFF == ord('q'):
             break
+        
+        try:
+            data = {"angle": yaw_angle}
+            json_data = json.dumps(data)
+
+            with lock:
+                print("locked file")
+                sleep(1/30)
+                with open('data.json', 'w') as file:
+                    file.write(json_data)
+            lock.release()
+        except Exception as e:
+            print(e)
+            exit(2)
 
     # Release resources
     video_capture.release()
     destroyAllWindows()
-
-def InterpolateYaw():
-    global real_yaw_angle
-    global yaw_angle
-    while True:
-        if(yaw_angle != 0 or real_yaw_angle != 0):
-            try:
-                if(yaw_angle < 0):
-                    angle_addition = -yaw_angle + 1
-                else:
-                    angle_addition = 0
-                if(yaw_angle > real_yaw_angle):
-                    real_yaw_angle += 0.06 * (yaw_angle + angle_addition / real_yaw_angle + angle_addition)
-                else:
-                    real_yaw_angle -= 0.06 * (real_yaw_angle + angle_addition / yaw_angle + angle_addition)
-            except:
-                real_yaw_angle = yaw_angle
-        sleep(1/60)
-        
-        print(f"{yaw_angle} | {real_yaw_angle}")
-
-        if(isnan(real_yaw_angle)):
-            real_yaw_angle = yaw_angle
-
-        with open("out.txt", 'w') as output:
-            output.write(f"{real_yaw_angle}")
-
-
-x = Thread(target=InterpolateYaw)
-
+    
 if __name__ == "__main__":
-    x.start()
     main()

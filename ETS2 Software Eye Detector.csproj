@@ -12,6 +12,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>vJoyInterfaceWrap.dll</HintPath>
     </Reference>
+  <Reference Include="vJoyInterface, Version=0.2.1.6, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>vJoyInterface.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
